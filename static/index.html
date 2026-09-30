@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentix ML — Social Media Sentiment Analysis & Classical ML Benchmark</title>
+  <meta name="description" content="Interactive Classical Machine Learning Sentiment Classification Web App for Social Media Text with Multinomial NB, KNN, Logistic Regression, and Linear SVM.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="dark-theme">
+  <!-- Background Glow & Grid -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="grid-overlay"></div>
+
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-inner container">
+      <div class="logo-group">
+        <div class="logo-icon-wrapper">
+          <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+          </svg>
+        </div>
+        <div>
+          <span class="logo-text">Sentix<span class="gradient-text">ML</span></span>
+          <span class="academic-badge">B.Tech ML Benchmark</span>
+        </div>
+      </div>
+
+      <nav class="nav-links">
+        <button class="nav-tab active" data-tab="tab-predict" id="tabBtnPredict">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          Live Inference
+        </button>
+        <button class="nav-tab" data-tab="tab-pipeline" id="tabBtnPipeline">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/></svg>
+          NLP Pipeline
+        </button>
+        <button class="nav-tab" data-tab="tab-benchmarks" id="tabBtnBenchmarks">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          Model Benchmarks
+        </button>
+        <button class="nav-tab" data-tab="tab-batch" id="tabBtnBatch">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="8" height="8" x="3" y="3" rx="2"/><rect width="8" height="8" x="13" y="3" rx="2"/><rect width="8" height="8" x="3" y="13" rx="2"/><rect width="8" height="8" x="13" y="13" rx="2"/></svg>
+          Batch Studio
+        </button>
+        <button class="nav-tab" data-tab="tab-theory" id="tabBtnTheory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M6 6h10M6 10h10"/></svg>
+          Theory
+        </button>
+      </nav>
+
+      <div class="system-status" id="serverStatusBadge">
+        <span class="status-dot pulsing"></span>
+        <span class="status-label">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content container">
+
+    <!-- TAB 1: LIVE INFERENCE -->
+    <section class="tab-pane active" id="tab-predict">
+      <!-- Hero Headline -->
+      <div class="hero-section">
+        <div class="badge-pill">Classical NLP & Machine Learning Suite</div>
+        <h1 class="hero-title">Social Media Sentiment Intelligence</h1>
+        <p class="hero-desc">
+          Compare real-time predictions across four foundational algorithms trained on the 
+          <strong>Twitter US Airline Sentiment</strong> benchmark with TF-IDF unigram & bigram representations.
+        </p>
+
+        <!-- Algorithm Highlights -->
+        <div class="algo-chips">
+          <div class="chip">
+            <span class="chip-dot mnb"></span>
+            <strong>Multinomial NB</strong>
+            <span class="chip-param">α=1.0</span>
+          </div>
+          <div class="chip">
+            <span class="chip-dot knn"></span>
+            <strong>K-Nearest Neighbors</strong>
+            <span class="chip-param">k=5, Cosine</span>
+          </div>
+          <div class="chip">
+            <span class="chip-dot lr"></span>
+            <strong>Logistic Regression</strong>
+            <span class="chip-param">C=1.0, L2</span>
+          </div>
+          <div class="chip">
+            <span class="chip-dot svm"></span>
+            <strong>Linear SVM</strong>
+            <span class="chip-param">C=1.0, Soft Margin</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Input Workspace -->
+      <div class="analyzer-workspace">
+        <div class="card glass-card input-card">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Social Media Input Text
+            </div>
+            <div class="char-count" id="charCount">0 / 600</div>
+          </div>
+
+          <div class="textarea-wrapper">
+            <textarea 
+              id="tweetInput" 
+              placeholder="Type or paste any tweet or social media review here... e.g. @VirginAmerica flight was incredible! Friendly crew, mood lighting, free WiFi loved every minute! #travel"
+              maxlength="600"
+              rows="4"
+            ></textarea>
+          </div>
+
+          <!-- Quick Samples -->
+          <div class="sample-presets">
+            <span class="presets-label">Quick Test Scenarios:</span>
+            <button class="preset-btn" data-preset="pos" id="presetPositive">
+              <span class="preset-emoji">😊</span> Positive Flight
+            </button>
+            <button class="preset-btn" data-preset="neg" id="presetNegative">
+              <span class="preset-emoji">😡</span> Severe Delay & Lost Bag
+            </button>
+            <button class="preset-btn" data-preset="neu" id="presetNeutral">
+              <span class="preset-emoji">😐</span> Informational Query
+            </button>
+            <button class="preset-btn" data-preset="sarcasm" id="presetSarcastic">
+              <span class="preset-emoji">🎭</span> Sarcasm / Mixed Tone
+            </button>
+          </div>
+
+          <!-- Action Bar -->
+          <div class="action-bar">
+            <div class="shortcut-hint">Press <kbd>Ctrl</kbd> + <kbd>Enter</kbd> to analyze</div>
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="clearBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                Clear
+              </button>
+              <button class="btn btn-primary" id="analyzeBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+                Classify Sentiment
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Consensus Hero Verdict -->
+        <div class="consensus-wrapper" id="consensusContainer" style="display: none;">
+          <div class="card glass-card consensus-card" id="consensusCard">
+            <div class="consensus-left">
+              <div class="verdict-tag" id="consensusTag">MODEL CONSENSUS</div>
+              <div class="consensus-title-row">
+                <span class="verdict-emoji" id="verdictEmoji">✨</span>
+                <span class="verdict-sentiment" id="verdictSentiment">POSITIVE</span>
+              </div>
+              <p class="verdict-desc" id="verdictDescription">
+                All 4 classical classifiers unanimously agree on this polarity classification.
+              </p>
+            </div>
+
+            <div class="consensus-right">
+              <div class="meter-box">
+                <div class="meter-value" id="agreementPercentage">100%</div>
+                <div class="meter-caption">Algorithm Agreement</div>
+                <div class="agreement-progress-bar">
+                  <div class="agreement-fill" id="agreementFill" style="width: 100%;"></div>
+                </div>
+              </div>
+              <div class="vote-pills" id="votePills">
+                <!-- Dynamically injected -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4-Model Breakdown Grid -->
+        <div class="models-grid-section" id="modelsGridSection" style="display: none;">
+          <div class="section-title-row">
+            <h2 class="section-heading">Multi-Model Algorithmic Comparison</h2>
+            <span class="section-badge">4 Classical Classifiers</span>
+          </div>
+
+          <div class="models-grid" id="modelsGrid">
+            <!-- 4 Cards will be dynamically rendered -->
+          </div>
+        </div>
+
+        <!-- Active TF-IDF Features Chip List -->
+        <div class="card glass-card active-features-card" id="activeFeaturesCard" style="display: none;">
+          <div class="card-header">
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Top TF-IDF Salient Terms (Feature Importance)
+            </div>
+            <span class="feature-hint">Unigrams & Bigrams that drove classification</span>
+          </div>
+          <div class="features-list" id="featuresList">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: NLP PIPELINE INSPECTOR -->
+    <section class="tab-pane" id="tab-pipeline">
+      <div class="hero-section">
+        <div class="badge-pill">Educational Pipeline Visualizer</div>
+        <h1 class="hero-title">End-to-End NLP Transformation</h1>
+        <p class="hero-desc">
+          Inspect how unstructured noisy social media text is filtered, normalized, and transformed into 
+          sparse numerical feature matrices through Phase A (Preprocessing) and Phase B (TF-IDF Vectorization).
+        </p>
+      </div>
+
+      <div class="pipeline-stepper" id="pipelineStepper">
+        <!-- Step 1: Raw Input -->
+        <div class="pipeline-step-card card glass-card">
+          <div class="step-num-badge">Step 1</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3 class="step-title">Raw Social Media Text</h3>
+              <span class="step-tag">Original Unstructured Data</span>
+            </div>
+            <p class="step-explain">Raw tweets contain noise: user tags (`@user`), URLs (`http://...`), hashtags (`#topic`), numbers, and punctuation.</p>
+            <div class="step-code-box" id="pipeRawText">Type or run a prediction to inspect the transformation...</div>
+          </div>
+        </div>
+
+        <!-- Step 2: Noise Filtering -->
+        <div class="pipeline-step-card card glass-card">
+          <div class="step-num-badge">Step 2</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3 class="step-title">Regex Noise Removal & Normalization</h3>
+              <span class="step-tag">Phase A1: Regular Expressions</span>
+            </div>
+            <p class="step-explain">Lowercased all characters, stripped URLs with <code>https?://\S+|www\.\S+</code>, stripped user handles with <code>@\w+</code>, and filtered out non-word punctuation.</p>
+            <div class="step-code-box" id="pipeNoiseFiltered">Waiting for input...</div>
+          </div>
+        </div>
+
+        <!-- Step 3: Stopword Filtering & Lemmatization -->
+        <div class="pipeline-step-card card glass-card">
+          <div class="step-num-badge">Step 3</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3 class="step-title">Stopword Filtering & WordNet Lemmatization</h3>
+              <span class="step-tag">Phase A2: Morphological Reduction</span>
+            </div>
+            <p class="step-explain">Stripped uninformative English grammatical stopwords (`the`, `is`, `at`, `on`) and reduced inflected words to base dictionary forms using <code>WordNetLemmatizer</code>.</p>
+            <div class="token-chips-grid" id="pipeLemmatizedTokens">
+              <span class="token-pill placeholder-token">No tokens yet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 4: TF-IDF Matrix Vectorization -->
+        <div class="pipeline-step-card card glass-card">
+          <div class="step-num-badge">Step 4</div>
+          <div class="step-content">
+            <div class="step-header">
+              <h3 class="step-title">TF-IDF Vectorization ($N$-Grams: Unigrams + Bigrams)</h3>
+              <span class="step-tag">Phase B: $X \in \mathbb{R}^{1 \times 2500}$ Sparse Vector</span>
+            </div>
+            <p class="step-explain">
+              Converted normalized tokens into numerical weights via Term Frequency-Inverse Document Frequency:
+              $$\text{TF-IDF}(t, d, D) = \text{TF}(t, d) \times \log\left(\frac{1 + |D|}{1 + \text{DF}(t, D)}\right) + 1$$
+            </p>
+            <div class="tfidf-active-terms" id="pipeTfidfTerms">
+              <span class="token-pill placeholder-token">Run inference to view top TF-IDF weights</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: MODEL BENCHMARKS -->
+    <section class="tab-pane" id="tab-benchmarks">
+      <div class="hero-section">
+        <div class="badge-pill">Academic Benchmark Results</div>
+        <h1 class="hero-title">Model Performance & Evaluation</h1>
+        <p class="hero-desc">
+          Rigorous benchmarking following the verification checklist: stratified 80/20 split, zero data leakage, 
+          and macro-averaged metrics (Accuracy, Precision, Recall, Macro F1-Score).
+        </p>
+      </div>
+
+      <!-- KPI Metric Cards -->
+      <div class="metrics-kpi-grid" id="kpiMetricsGrid">
+        <div class="card glass-card kpi-card">
+          <div class="kpi-label">Top Algorithm</div>
+          <div class="kpi-value highlight" id="kpiTopModel">Linear SVM</div>
+          <div class="kpi-sub">Highest Macro F1-Score</div>
+        </div>
+        <div class="card glass-card kpi-card">
+          <div class="kpi-label">Best Macro F1</div>
+          <div class="kpi-value text-emerald" id="kpiTopF1">--</div>
+          <div class="kpi-sub">Balanced across all 3 classes</div>
+        </div>
+        <div class="card glass-card kpi-card">
+          <div class="kpi-label">Classification Accuracy</div>
+          <div class="kpi-value text-blue" id="kpiTopAcc">--</div>
+          <div class="kpi-sub">Test set evaluation</div>
+        </div>
+        <div class="card glass-card kpi-card">
+          <div class="kpi-label">TF-IDF Feature Space</div>
+          <div class="kpi-value text-amber">2,500</div>
+          <div class="kpi-sub">Unigrams & Bigrams (1, 2)</div>
+        </div>
+      </div>
+
+      <!-- Model Comparison Table -->
+      <div class="card glass-card benchmark-table-card">
+        <div class="card-header">
+          <div class="card-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            Comprehensive Algorithm Scorecard
+          </div>
+          <span class="feature-hint">Stratified 20% holdout test set (zero_division=0)</span>
+        </div>
+        <div class="table-responsive">
+          <table class="benchmark-table" id="benchmarkTable">
+            <thead>
+              <tr>
+                <th>Algorithm</th>
+                <th>Hyperparameters / Architecture</th>
+                <th>Accuracy</th>
+                <th>Macro Precision</th>
+                <th>Macro Recall</th>
+                <th>Macro F1-Score</th>
+                <th>Rank</th>
+              </tr>
+            </thead>
+            <tbody id="benchmarkTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Interactive Confusion Matrix Viewer -->
+      <div class="card glass-card cm-viewer-card">
+        <div class="card-header">
+          <div>
+            <div class="card-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+              Interactive Confusion Matrix Visualizer
+            </div>
+            <div class="feature-hint">Select a model to view its true positive, false positive, and confusion distribution</div>
+          </div>
+          <div class="cm-tabs" id="cmModelSelector">
+            <!-- Tabs for 4 models -->
+          </div>
+        </div>
+
+        <div class="cm-content-layout">
+          <div class="cm-heatmap-container">
+            <div class="cm-axis-title y-axis">Actual / True Polarity</div>
+            <div class="cm-grid-wrapper">
+              <div class="cm-axis-title x-axis">Predicted Polarity</div>
+              <div class="cm-grid" id="cmHeatmapGrid">
+                <!-- 3x3 cells -->
+              </div>
+            </div>
+          </div>
+
+          <div class="cm-insights-box">
+            <h4 class="insights-title" id="cmModelTitle">Model Insights</h4>
+            <div class="insights-stats" id="cmModelDetails">
+              <!-- Insights & per-class precision/recall -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Generated Plot Artifacts -->
+      <div class="artifacts-preview-row">
+        <div class="card glass-card plot-card">
+          <div class="card-header">
+            <div class="card-title">Generated Confusion Matrices Heatmap</div>
+            <a href="/artifacts/confusion_matrices.png" target="_blank" class="download-link">View Full Image</a>
+          </div>
+          <img src="/artifacts/confusion_matrices.png" alt="Confusion Matrices" class="artifact-img" onerror="this.style.display='none'">
+        </div>
+        <div class="card glass-card plot-card">
+          <div class="card-header">
+            <div class="card-title">Generated Algorithm Comparison Plot</div>
+            <a href="/artifacts/model_comparison.png" target="_blank" class="download-link">View Full Image</a>
+          </div>
+          <img src="/artifacts/model_comparison.png" alt="Model Comparison" class="artifact-img" onerror="this.style.display='none'">
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: BATCH STUDIO -->
+    <section class="tab-pane" id="tab-batch">
+      <div class="hero-section">
+        <div class="badge-pill">Batch Social Stream Analysis</div>
+        <h1 class="hero-title">Bulk Sentiment Studio</h1>
+        <p class="hero-desc">
+          Process multiple social media posts in parallel. Obtain instant aggregate polarity breakdown 
+          and consensus distributions across all four classifiers.
+        </p>
+      </div>
+
+      <div class="batch-workspace">
+        <div class="card glass-card">
+          <div class="card-header">
+            <div class="card-title">Paste Multiple Tweets (One per line)</div>
+            <button class="btn btn-sm btn-secondary" id="loadBatchPresetBtn">Load Sample Tweet Stream</button>
+          </div>
+          <textarea id="batchInput" class="batch-textarea" rows="6" placeholder="Enter one tweet per line...&#10;@VirginAmerica wonderful flight today to SFO! Friendly crew and smooth landing.&#10;@united flight delayed for 4 hours, gate staff rude and luggage lost! Awful service.&#10;@SouthwestAir what time does baggage drop open at Chicago Midway airport?"></textarea>
+          <div class="action-bar">
+            <div class="shortcut-hint" id="batchLinesCount">0 lines detected</div>
+            <button class="btn btn-primary" id="runBatchBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Run Batch Analysis
+            </button>
+          </div>
+        </div>
+
+        <!-- Batch Results -->
+        <div class="batch-results-wrapper" id="batchResultsWrapper" style="display: none;">
+          <!-- Aggregate Breakdown Cards -->
+          <div class="batch-summary-row">
+            <div class="card glass-card batch-stat-card">
+              <div class="batch-stat-val" id="batchTotalCount">0</div>
+              <div class="batch-stat-lbl">Total Posts Analyzed</div>
+            </div>
+            <div class="card glass-card batch-stat-card positive">
+              <div class="batch-stat-val text-emerald" id="batchPosCount">0%</div>
+              <div class="batch-stat-lbl">Positive Polarity</div>
+            </div>
+            <div class="card glass-card batch-stat-card neutral">
+              <div class="batch-stat-val text-amber" id="batchNeuCount">0%</div>
+              <div class="batch-stat-lbl">Neutral Polarity</div>
+            </div>
+            <div class="card glass-card batch-stat-card negative">
+              <div class="batch-stat-val text-rose" id="batchNegCount">0%</div>
+              <div class="batch-stat-lbl">Negative Polarity</div>
+            </div>
+          </div>
+
+          <!-- Aggregate Distribution Visual Bar -->
+          <div class="batch-bar-container">
+            <div class="batch-bar-fill pos" id="barFillPos" style="width: 33%;"></div>
+            <div class="batch-bar-fill neu" id="barFillNeu" style="width: 33%;"></div>
+            <div class="batch-bar-fill neg" id="barFillNeg" style="width: 34%;"></div>
+          </div>
+
+          <!-- Batch Table -->
+          <div class="card glass-card table-card">
+            <div class="table-responsive">
+              <table class="benchmark-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Social Media Text</th>
+                    <th>Consensus Polarity</th>
+                    <th>Agreement</th>
+                    <th>Individual Model Predictions</th>
+                  </tr>
+                </thead>
+                <tbody id="batchTableBody">
+                  <!-- Dynamically rendered -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 5: THEORY & METHODOLOGY -->
+    <section class="tab-pane" id="tab-theory">
+      <div class="hero-section">
+        <div class="badge-pill">Academic Reference & Curriculum Mapping</div>
+        <h1 class="hero-title">Classical ML vs Deep Learning Foundations</h1>
+        <p class="hero-desc">
+          Core theoretical concepts, mathematical formulas, and algorithmic design choices 
+          for 5th Semester B.Tech Machine Learning coursework.
+        </p>
+      </div>
+
+      <div class="theory-grid">
+        <div class="card glass-card theory-card">
+          <div class="theory-icon mnb">P(c|d)</div>
+          <h3 class="theory-title">1. Multinomial Naive Bayes</h3>
+          <p class="theory-text">
+            Applies Bayes' Theorem with the naive independence assumption between features. Features represent 
+            term frequencies or TF-IDF weights:
+          </p>
+          <div class="formula-box">
+            $$P(c \mid d) \propto P(c) \prod_{i=1}^{n} P(w_i \mid c)$$
+            $$P(w_i \mid c) = \frac{N_{ci} + \alpha}{N_c + \alpha |V|}$$
+          </div>
+          <p class="theory-sub">
+            Laplace smoothing ($\alpha=1.0$) prevents the zero-probability problem for words unobserved in a class.
+          </p>
+        </div>
+
+        <div class="card glass-card theory-card">
+          <div class="theory-icon knn">k-NN</div>
+          <h3 class="theory-title">2. K-Nearest Neighbors ($k=5$, Cosine)</h3>
+          <p class="theory-text">
+            Non-parametric lazy learner calculating proximity in 2500-dimensional sparse TF-IDF space. Uses 
+            <strong>Cosine Distance</strong> rather than Euclidean to disregard document length variations:
+          </p>
+          <div class="formula-box">
+            $$\text{Cosine Similarity}(\vec{u}, \vec{v}) = \frac{\vec{u} \cdot \vec{v}}{\|\vec{u}\|_2 \|\vec{v}\|_2}$$
+            $$d_{\text{cosine}}(\vec{u}, \vec{v}) = 1 - \text{Cosine Similarity}$$
+          </div>
+          <p class="theory-sub">
+            Majority voting among the $k=5$ closest document vectors determines the class label.
+          </p>
+        </div>
+
+        <div class="card glass-card theory-card">
+          <div class="theory-icon lr">σ(z)</div>
+          <h3 class="theory-title">3. Logistic Regression (Multinomial Softmax)</h3>
+          <p class="theory-text">
+            Linear model mapping feature weighted sums through the softmax link function to yield calibrated 
+            posterior class probabilities:
+          </p>
+          <div class="formula-box">
+            $$P(y = k \mid \vec{x}) = \frac{e^{\vec{w}_k^T \vec{x} + b_k}}{\sum_{j=1}^{K} e^{\vec{w}_j^T \vec{x} + b_j}}$$
+          </div>
+          <p class="theory-sub">
+            Trained with L2 ridge regularization ($C=1.0$) to prevent overfitting on high-dimensional sparse text.
+          </p>
+        </div>
+
+        <div class="card glass-card theory-card">
+          <div class="theory-icon svm">SVM</div>
+          <h3 class="theory-title">4. Linear Support Vector Machine (Linear SVM)</h3>
+          <p class="theory-text">
+            Constructs optimal separating hyperplanes maximizing the geometric margin between classes with soft-margin 
+            slack variables $\xi_i$:
+          </p>
+          <div class="formula-box">
+            $$\min_{\vec{w}, b, \xi} \frac{1}{2}\|\vec{w}\|^2 + C \sum_{i=1}^{N} \xi_i$$
+            $$\text{subject to } y_i(\vec{w}^T \vec{x}_i + b) \ge 1 - \xi_i, \quad \xi_i \ge 0$$
+          </div>
+          <p class="theory-sub">
+            Linear SVM excels in text classification due to high sparsity and linear separability in high-dimensional TF-IDF space.
+          </p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer container">
+    <div class="footer-inner">
+      <div class="footer-left">
+        <span>Sentix ML • Classical Sentiment Benchmark</span>
+        <span class="footer-sep">|</span>
+        <span>Twitter US Airline Sentiment Dataset</span>
+      </div>
+      <div class="footer-right">
+        <span>FastAPI + Scikit-Learn + Vanilla Web Tech</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
